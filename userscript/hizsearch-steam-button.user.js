@@ -33,7 +33,7 @@
     btn.appendChild(label);
 
     btn.addEventListener('click', function () {
-        window.open(HIZ_URL + '/?q=' + APP_ID + '&utm_source=hizsearch-steam-button', '_blank');
+        window.open(HIZ_URL + '/?q=' + APP_ID + '', '_blank');
     });
 
     var style = document.createElement('style');
