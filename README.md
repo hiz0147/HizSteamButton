@@ -13,7 +13,11 @@ Search any Steam game on HizSearch with one click.
 1) Install [Violentmonkey](https://violentmonkey.github.io/), [ScriptCat](https://scriptcat.org/) or [Tampermonkey](https://www.tampermonkey.net/).
 2) Click [this link](https://raw.githubusercontent.com/hiz0147/HizSteamButton/main/userscript/hizsearch-steam-button.user.js) — a pop-up will ask you to install it. (recommended enable auto-update)
 
-### Browser extension
+### Firefox Extension
+
+[HizSearch Add-on](https://addons.mozilla.org/en-US/firefox/addon/hizsearch-steam-button/)
+
+### Add manual browser extension
 1) Open `chrome://extensions` (Chrome/Edge/Brave) or `about:debugging#/runtime/this-firefox` (Firefox).
 2) Enable **Developer mode**.
 3) Click **Load unpacked** and select the `extension/` folder.
