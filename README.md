@@ -3,28 +3,27 @@
 
 Search any Steam game on HizSearch with one click.
 
-## Features
-- Adds a fixed "Search on Hiz" button to all Steam store app pages (`store.steampowered.com/app/*`)
-- One-click search of the current game on HizSearch
-
 ## Installation
+
+### Manual browser extension
+1) Open `chrome://extensions` (Chrome/Edge/Brave) or `about:debugging#/runtime/this-firefox` (Firefox).
+2) Turn on **Developer mode** (top-right toggle in Chrome, top-left in Firefox).
+3) Click **Load unpacked** and select the `extension/` folder.
+4) The button will appear on any Steam store app page. 
+5) Click the extension icon in your toolbar to change its position or hide the hiz icon.
+
+### Firefox Extension (add-on store)
+[HizSearch Add-on](https://addons.mozilla.org/en-US/firefox/addon/hizsearch-steam-button/)
 
 ### User script
 1) Install [Violentmonkey](https://violentmonkey.github.io/), [ScriptCat](https://scriptcat.org/) or [Tampermonkey](https://www.tampermonkey.net/).
-2) Click [this link](https://raw.githubusercontent.com/hiz0147/HizSteamButton/main/userscript/hizsearch-steam-button.user.js) — a pop-up will ask you to install it. (recommended enable auto-update)
-
-### Firefox Extension
-
-[HizSearch Add-on](https://addons.mozilla.org/en-US/firefox/addon/hizsearch-steam-button/)
-
-### Add manual browser extension
-1) Open `chrome://extensions` (Chrome/Edge/Brave) or `about:debugging#/runtime/this-firefox` (Firefox).
-2) Enable **Developer mode**.
-3) Click **Load unpacked** and select the `extension/` folder.
-4) Done. The button will appear on any Steam store app page.
+2) Click [this link](https://raw.githubusercontent.com/hiz0147/HizSteamButton/main/userscript/hizsearch-steam-button.user.js) — the extension will ask you to install it. Enable auto-update if prompted.
+3) To change the button position or hide the hiz icon, edit the `CONFIG` object at the top of the script. (floating-right | floating-left | steam-native)
 
 ## Preview
 
 ![Preview](https://i.ibb.co/dsfS3s46/image.png)
-
-![image](https://i.ibb.co/qYPDMG3g/65859-DDB-7-F4-B-4-CC5-9-A3-C-9-E97-D7-FBB673.png)
+<br>
+![Preview](https://i.ibb.co/yByTKQDW/b.png)
+<br>
+![Preview](https://i.ibb.co/RGL28GGc/a.png)

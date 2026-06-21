@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    margin: 0;
+    padding: 14px;
+    width: 210px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #e5e7eb;
+    background: #111;
+}
+h1 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin: 0 0 10px;
+}
+.section {
+    margin-bottom: 10px;
+}
+.section:last-child {
+    margin-bottom: 0;
+}
+label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+label:hover {
+    background: rgba(255,255,255,0.05);
+}
+input[type="radio"] {
+    accent-color: #10b981;
+    margin: 0;
+    flex-shrink: 0;
+}
+input[type="checkbox"] {
+    accent-color: #10b981;
+    margin: 0;
+    flex-shrink: 0;
+}
+hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 8px 0;
+}
+</style>
+</head>
+<body>
+<h1>Button Position</h1>
+<div class="section">
+    <label><input type="radio" name="pos" value="floating-right"> Floating Right</label>
+    <label><input type="radio" name="pos" value="floating-left"> Floating Left</label>
+    <label><input type="radio" name="pos" value="steam-native"> Next to Community Hub</label>
+</div>
+<hr>
+<div class="section">
+    <label><input type="checkbox" id="showIcon"> Show icon</label>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
