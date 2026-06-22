@@ -6,11 +6,12 @@ Search any Steam game on HizSearch with one click.
 ## Installation
 
 ### Manual browser extension
-1) Open `chrome://extensions` (Chrome/Edge/Brave) or `about:debugging#/runtime/this-firefox` (Firefox).
-2) Turn on **Developer mode** (top-right toggle in Chrome, top-left in Firefox).
-3) Click **Load unpacked** and select the `extension/` folder.
-4) The button will appear on any Steam store app page. 
-5) Click the extension icon in your toolbar to change its position or hide the hiz icon.
+1) [Download the latest extension zip](https://github.com/hiz0147/HizSteamButton/releases/latest/download/hizsteambutton.zip) and extract it.
+2) Open `chrome://extensions` (Chrome/Edge/Brave) or `about:debugging#/runtime/this-firefox` (Firefox).
+3) Turn on **Developer mode** (top-right toggle in Chrome, top-left in Firefox).
+4) Click **Load unpacked** and select the extracted folder.
+5) The button will appear on any Steam store app page.
+6) Click the extension icon in your toolbar to change its position or hide the hiz icon.
 
 ### Firefox Extension (add-on store)
 [HizSearch Add-on](https://addons.mozilla.org/en-US/firefox/addon/hizsearch-steam-button/)
