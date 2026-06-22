@@ -28,3 +28,7 @@ Search any Steam game on HizSearch with one click.
 ![Preview](https://i.ibb.co/yByTKQDW/b.png)
 <br>
 ![Preview](https://i.ibb.co/RGL28GGc/a.png)
+
+## Contributing
+
+Suggestions and contributions are welcome. Feel free to open an [issue](https://github.com/hiz0147/HizSteamButton/issues) or submit a [pull request](https://github.com/hiz0147/HizSteamButton/pulls).

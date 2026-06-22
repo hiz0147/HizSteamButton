@@ -4,36 +4,36 @@ on:
   push:
     branches: [main]
     paths:
-      - 'HizSteamButton/extension/**'
-  release:
-    types: [published]
+      - 'extension/**'
+  workflow_dispatch:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p "require('./extension/manifest.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check
+        run: echo "exists=$([ -z \"$(git tag -l v${{ steps.version.outputs.version }})\" ] && echo false || echo true)" >> $GITHUB_OUTPUT
 
       - name: Create extension zip
-        run: |
-          cd HizSteamButton/extension
-          zip -r ../../hizsteambutton.zip . -x "*.git*"
+        if: steps.check.outputs.exists == 'false'
+        run: cd extension && zip -r ../hizsteambutton.zip .
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Create Release
+        if: steps.check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v3
         with:
-          name: hizsteambutton
-          path: hizsteambutton.zip
-          compression-level: 0
-
-      - name: Upload to release
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: hizsteambutton.zip
-          asset_name: hizsteambutton.zip
-          asset_content_type: application/zip
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          files: hizsteambutton.zip
+          generate_release_notes: true
