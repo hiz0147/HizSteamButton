@@ -3,7 +3,7 @@
 
 Search any Steam game on HizSearch with one click. Works on both Steam Store and SteamDB.
 
-## Installation
+## Installation methods
 
 ### Steam Client Browser
 Since Steam runs on Chromium, you can install Chrome extensions directly inside it.
