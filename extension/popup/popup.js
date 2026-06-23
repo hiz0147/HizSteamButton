@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     var radios = document.querySelectorAll('input[name="pos"]');
     var showIconCheck = document.getElementById('showIcon');
+    var newTabCheck = document.getElementById('newTab');
 
-    chrome.storage.sync.get(['position', 'showIcon'], function (data) {
+    chrome.storage.sync.get(['position', 'showIcon', 'newTab'], function (data) {
         var currentPos = data.position || 'floating-right';
         for (var i = 0; i < radios.length; i++) {
             if (radios[i].value === currentPos) {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         showIconCheck.checked = data.showIcon !== false;
+        newTabCheck.checked = data.newTab !== false;
     });
 
     for (var i = 0; i < radios.length; i++) {
@@ -23,5 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     showIconCheck.addEventListener('change', function () {
         chrome.storage.sync.set({ showIcon: this.checked });
+    });
+
+    newTabCheck.addEventListener('change', function () {
+        chrome.storage.sync.set({ newTab: this.checked });
     });
 });

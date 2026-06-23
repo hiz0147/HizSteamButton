@@ -23,7 +23,13 @@ jobs:
 
       - name: Check if tag exists
         id: check
-        run: echo "exists=$([ -z \"$(git tag -l v${{ steps.version.outputs.version }})\" ] && echo false || echo true)" >> $GITHUB_OUTPUT
+        run: |
+          tag="v${{ steps.version.outputs.version }}"
+          if git rev-parse -q --verify "$tag" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create extension zip
         if: steps.check.outputs.exists == 'false'

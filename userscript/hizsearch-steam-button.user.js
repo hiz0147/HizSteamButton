@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         HizSearch Steam Button
 // @namespace    https://hizsearch.pages.dev/
-// @version      1.1.0
+// @version      1.3.0
 // @description  Search the current game on HizSearch
 // @author       HizSearch
 // @match        https://store.steampowered.com/app/*
+// @match        https://steamdb.info/app/*
 // @icon         https://hizsearch.pages.dev/favicon.ico
 // @grant        none
 // ==/UserScript==
@@ -14,16 +15,27 @@
 
     var CONFIG = {
         position: 'floating-right',
-        // 'floating-right' | 'floating-left' | 'steam-native'
-        showIcon: true
+        // 'floating-right' | 'floating-left' | 'native'
+        showIcon: true,
+        newTab: true
     };
 
     var APP_ID = (window.location.pathname.match(/\/app\/(\d+)/) || [])[1];
     if (!APP_ID) return;
 
     var HIZ_URL = 'https://hizsearch.pages.dev';
+    var isSteamStore = location.hostname === 'store.steampowered.com';
 
-    function buildButton(showIcon) {
+    function openHiz(newTab) {
+        var url = HIZ_URL + '/?q=' + APP_ID;
+        if (newTab) {
+            window.open(url, '_blank');
+        } else {
+            window.location.href = url;
+        }
+    }
+
+    function buildButton(showIcon, newTab) {
         var btn = document.createElement('div');
         btn.id = 'hizsearch-btn';
 
@@ -40,7 +52,7 @@
         btn.appendChild(label);
 
         btn.addEventListener('click', function () {
-            window.open(HIZ_URL + '/?q=' + APP_ID, '_blank');
+            openHiz(newTab);
         });
 
         return btn;
@@ -53,9 +65,9 @@
         if (oldStyle) oldStyle.remove();
     }
 
-    function renderFloating(position, showIcon) {
+    function renderFloating(position, showIcon, newTab) {
         clean();
-        var btn = buildButton(showIcon);
+        var btn = buildButton(showIcon, newTab);
         var isRight = position === 'floating-right';
 
         var style = document.createElement('style');
@@ -92,7 +104,7 @@
         document.body.appendChild(btn);
     }
 
-    function renderSteamNative(showIcon) {
+    function renderSteamNative(showIcon, newTab) {
         var container = document.querySelector('.apphub_OtherSiteInfo');
         if (!container) {
             var observer = new MutationObserver(function () {
@@ -142,15 +154,45 @@
             btn.style.color = '#67c1f5';
         });
         btn.addEventListener('click', function () {
-            window.open(HIZ_URL + '/?q=' + APP_ID, '_blank');
+            openHiz(newTab);
         });
 
         container.appendChild(btn);
     }
 
-    if (CONFIG.position === 'steam-native') {
-        renderSteamNative(CONFIG.showIcon);
+    function renderSteamdbNative(showIcon, newTab) {
+        var container = document.querySelector('.pagehead-actions.app-links');
+        if (!container) return;
+
+        clean();
+        var btn = document.createElement('a');
+        btn.id = 'hizsearch-btn';
+        btn.className = 'btn';
+        btn.href = '#';
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            openHiz(newTab);
+        });
+
+        if (showIcon) {
+            var icon = document.createElement('img');
+            icon.src = HIZ_URL + '/favicon-32x32.png';
+            icon.alt = '';
+            icon.style.cssText = 'width:16px;height:16px;vertical-align:middle;margin-right:4px;';
+            btn.appendChild(icon);
+        }
+
+        btn.appendChild(document.createTextNode('HizSearch'));
+        container.appendChild(btn);
+    }
+
+    if (CONFIG.position === 'native' || CONFIG.position === 'steam-native') {
+        if (isSteamStore) {
+            renderSteamNative(CONFIG.showIcon, CONFIG.newTab);
+        } else {
+            renderSteamdbNative(CONFIG.showIcon, CONFIG.newTab);
+        }
     } else {
-        renderFloating(CONFIG.position, CONFIG.showIcon);
+        renderFloating(CONFIG.position, CONFIG.showIcon, CONFIG.newTab);
     }
 })();
