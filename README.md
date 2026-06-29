@@ -16,9 +16,13 @@ Since Steam runs on Chromium, you can install Chrome extensions directly inside 
 6) Click **Details** → **Extension options** to configure position, icon and more.
 7) The button will appear on Steam Store and SteamDB app pages.
 
-> **Note:** If you have issues with Cloudflare when opening HizSearch, try closing Steam completely and opening it again.
+> [!WARNING] 
+> If you plan to download content directly using this option, we recommend installing uBlock Origin Lite (since it is the only one supported in this mode).
+> 
+> To install it, in the same section where you dragged the folder, tap the Chrome Web Store, search for uBlock Origin Lite, and install it just as you would in a regular browser.
 
-> **Note:** This was tested on a fresh Steam installation.
+> [!NOTE]
+> If you have issues with Cloudflare when opening HizSearch, try closing Steam completely and opening it again.
 
 ---
 
