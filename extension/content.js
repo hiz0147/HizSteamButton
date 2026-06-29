@@ -5,6 +5,10 @@
     var HIZ_URL = 'https://hizsearch.pages.dev';
     var isSteamStore = location.hostname === 'store.steampowered.com';
 
+    function isSteamClient() {
+        return /Valve Steam|SteamClient/i.test(navigator.userAgent);
+    }
+
     function openHiz(newTab) {
         var url = HIZ_URL + '/?q=' + APP_ID;
         if (newTab) {
@@ -180,13 +184,15 @@
     }
 
     chrome.storage.sync.get(['position', 'showIcon', 'newTab'], function (data) {
-        render(data.position || 'floating-right', data.showIcon !== false, data.newTab !== false);
+        var newTab = 'newTab' in data ? data.newTab : !isSteamClient();
+        render(data.position || 'floating-right', data.showIcon !== false, newTab);
     });
 
     chrome.storage.onChanged.addListener(function (changes, area) {
         if (area === 'sync' && (changes.position || changes.showIcon || changes.newTab)) {
             chrome.storage.sync.get(['position', 'showIcon', 'newTab'], function (data) {
-                render(data.position || 'floating-right', data.showIcon !== false, data.newTab !== false);
+                var newTab = 'newTab' in data ? data.newTab : !isSteamClient();
+                render(data.position || 'floating-right', data.showIcon !== false, newTab);
             });
         }
     });

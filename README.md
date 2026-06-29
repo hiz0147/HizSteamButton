@@ -13,7 +13,7 @@ Since Steam runs on Chromium, you can install Chrome extensions directly inside 
 3) In the address bar, enter `chrome://extensions` and press Enter.
 4) Turn on **Developer mode** (top-right toggle).
 5) Drag and drop the extracted folder onto the extensions page.
-6) Click **Details** → **Extension options** and uncheck **Open in new tab** so it navigates in the same window. Configure position and icon as you like.
+6) Click **Details** → **Extension options** to configure position, icon and more.
 7) The button will appear on Steam Store and SteamDB app pages.
 
 > **Note:** If you have issues with Cloudflare when opening HizSearch, try closing Steam completely and opening it again.
