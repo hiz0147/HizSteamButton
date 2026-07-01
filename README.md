@@ -13,7 +13,7 @@ Since Steam runs on Chromium, you can install Chrome extensions directly inside 
 3) In the address bar, enter `chrome://extensions` and press Enter.
 4) Turn on **Developer mode** (top-right toggle).
 5) Drag and drop the extracted folder onto the extensions page.
-6) Click **Details** → **Extension options** to configure position, icon and more.
+6) Click the extension icon in your toolbar to configure position, icon and behavior per site.
 7) The button will appear on Steam Store and SteamDB app pages.
 
 > [!WARNING] 
@@ -44,7 +44,7 @@ Since Steam runs on Chromium, you can install Chrome extensions directly inside 
 ### User script
 1) Install [Violentmonkey](https://violentmonkey.github.io/), [ScriptCat](https://scriptcat.org/) or [Tampermonkey](https://www.tampermonkey.net/).
 2) Click [this link](https://raw.githubusercontent.com/hiz0147/HizSteamButton/main/userscript/hizsearch-steam-button.user.js) — the extension will ask you to install it. Enable auto-update if prompted.
-3) To change the button position, icon or new tab behavior, edit the `CONFIG` object at the top of the script. (floating-right | floating-left | native)
+3) To configure the button, right-click the user script manager icon and → **Configure HizSearch**. A settings modal lets you choose position, icon visibility and new-tab behavior.
 
 ## Preview
 

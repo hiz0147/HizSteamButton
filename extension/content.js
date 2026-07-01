@@ -4,6 +4,29 @@
 
     var HIZ_URL = 'https://hizsearch.pages.dev';
     var isSteamStore = location.hostname === 'store.steampowered.com';
+    var currentSite = isSteamStore ? 'store' : 'steamdb';
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+        if (msg.action === 'getSite') sendResponse({ site: currentSite });
+    });
+
+    var sitePlaces = {
+        store: [
+            { id: 'other-site-info', selector: '.apphub_OtherSiteInfo', method: 'append' },
+            { id: 'left-of-cart', selector: '.game_purchase_action', method: 'prependWrap', wrapperClass: 'game_purchase_action_bg' },
+            { id: 'below-dev-pub', selector: '.glance_ctn_responsive_left', method: 'append' }
+        ],
+        steamdb: [
+            { id: 'app-links', selector: '.pagehead-actions.app-links', method: 'append' }
+        ]
+    };
+
+    function getPlace(placeId) {
+        var places = sitePlaces[currentSite];
+        for (var i = 0; i < places.length; i++) {
+            if (places[i].id === placeId) return places[i];
+        }
+        return null;
+    }
 
     function isSteamClient() {
         return /Valve Steam|SteamClient/i.test(navigator.userAgent);
@@ -18,7 +41,134 @@
         }
     }
 
-    function buildButton(showIcon, newTab) {
+    function clean() {
+        var old = document.getElementById('hizsearch-btn');
+        if (old) {
+            var parent = old.parentNode;
+            old.remove();
+            if (parent && parent.getAttribute('data-hizwrap') === '') parent.remove();
+        }
+        var oldStyle = document.getElementById('hizsearch-style');
+        if (oldStyle) oldStyle.remove();
+    }
+
+    function injectAtPlace(btn, place) {
+        var target = document.querySelector(place.selector);
+        if (!target) return false;
+
+        var node = btn;
+        if (place.method === 'prependWrap') {
+            var wrapper = document.createElement('div');
+            if (place.wrapperClass) wrapper.className = place.wrapperClass;
+            wrapper.setAttribute('data-hizwrap', '');
+            wrapper.style.cssText = 'background:none;border:none;box-shadow:none;';
+            wrapper.appendChild(btn);
+            node = wrapper;
+        }
+
+        switch (place.method) {
+            case 'append':
+                target.appendChild(node);
+                break;
+            case 'prepend':
+            case 'prependWrap':
+                target.insertBefore(node, target.firstChild);
+                break;
+        }
+        return true;
+    }
+
+    function buildSteamNativeButton(showIcon, newTab, place) {
+        var btn;
+
+        if (place && (place.id === 'other-site-info' || place.id === 'below-dev-pub')) {
+            btn = document.createElement('a');
+            btn.className = 'btnv6_blue_hoverfade btn_medium';
+            btn.href = '#';
+            btn.id = 'hizsearch-btn';
+
+            var span = document.createElement('span');
+            if (showIcon) {
+                var icon = document.createElement('img');
+                icon.src = HIZ_URL + '/favicon-32x32.png';
+                icon.alt = '';
+                icon.style.cssText = 'width:16px;height:16px;vertical-align:middle;margin-right:6px;';
+                span.appendChild(icon);
+            }
+            span.appendChild(document.createTextNode('HizSearch'));
+            btn.appendChild(span);
+
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                openHiz(newTab);
+            });
+
+            return btn;
+        }
+
+        btn = document.createElement('div');
+        btn.id = 'hizsearch-btn';
+        btn.style.cssText =
+            'cursor:pointer;' +
+            'padding:0 13px;height:32px;' +
+            'background:#67C1F5CC;color:#fff;' +
+            'border-radius:2px;text-align:center;' +
+            'font-family:"Motiva Sans",sans-serif;' +
+            'font-size:14px;display:inline-flex;align-items:center;gap:4px;' +
+            'line-height:32px;border:0;position:relative;' +
+            'transition:all 0.2s ease;' +
+            'user-select:none;';
+
+        if (showIcon) {
+            var icon = document.createElement('img');
+            icon.src = HIZ_URL + '/favicon-32x32.png';
+            icon.alt = '';
+            icon.style.cssText = 'width:12px;height:12px;flex-shrink:0;';
+            btn.appendChild(icon);
+        }
+
+        var label = document.createElement('span');
+        label.textContent = 'HizSearch';
+        btn.appendChild(label);
+
+        btn.addEventListener('mouseenter', function () {
+            btn.style.background = 'linear-gradient(-60deg, #417a9b 5%, #67c1f5 95%)';
+        });
+        btn.addEventListener('mouseleave', function () {
+            btn.style.background = '#67C1F5CC';
+        });
+        btn.addEventListener('click', function () {
+            openHiz(newTab);
+        });
+
+        return btn;
+    }
+
+    function buildSteamdbNativeButton(showIcon, newTab) {
+        var btn = document.createElement('a');
+        btn.id = 'hizsearch-btn';
+        btn.className = 'btn';
+        btn.style.fontWeight = '400';
+        btn.href = '#';
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            openHiz(newTab);
+        });
+
+        if (showIcon) {
+            var icon = document.createElement('img');
+            icon.src = HIZ_URL + '/favicon-32x32.png';
+            icon.alt = '';
+            icon.style.cssText = 'width:16px;height:16px;vertical-align:middle;margin-right:4px;';
+            btn.appendChild(icon);
+        }
+
+        btn.appendChild(document.createTextNode('HizSearch'));
+        return btn;
+    }
+
+    function renderFloating(position, showIcon, newTab) {
+        clean();
         var btn = document.createElement('div');
         btn.id = 'hizsearch-btn';
 
@@ -38,19 +188,6 @@
             openHiz(newTab);
         });
 
-        return btn;
-    }
-
-    function clean() {
-        var old = document.getElementById('hizsearch-btn');
-        if (old) old.remove();
-        var oldStyle = document.getElementById('hizsearch-style');
-        if (oldStyle) oldStyle.remove();
-    }
-
-    function renderFloating(position, showIcon, newTab) {
-        clean();
-        var btn = buildButton(showIcon, newTab);
         var isRight = position === 'floating-right';
 
         var style = document.createElement('style');
@@ -88,112 +225,79 @@
         document.body.appendChild(btn);
     }
 
-    function renderSteamNative(showIcon, newTab) {
-        var container = document.querySelector('.apphub_OtherSiteInfo');
-        if (!container) {
-            var observer = new MutationObserver(function () {
-                var c = document.querySelector('.apphub_OtherSiteInfo');
-                if (c) {
-                    observer.disconnect();
-                    renderSteamNative(showIcon);
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
+    function render(placeId, showIcon, newTab) {
+        clean();
+
+        if (placeId.indexOf('floating-') === 0) {
+            renderFloating(placeId, showIcon, newTab);
             return;
         }
 
-        clean();
-        var btn = document.createElement('div');
-        btn.id = 'hizsearch-btn';
+        var place = getPlace(placeId);
+        if (!place) place = sitePlaces[currentSite][0];
 
-        btn.style.cssText =
-            'cursor:pointer;' +
-            'padding:5px 13px;margin:2px 0;' +
-            'background:#67C1F533;color:#67c1f5;' +
-            'border-radius:2px;text-align:center;' +
-            'font-family:"Motiva Sans",sans-serif;' +
-            'font-size:15px;display:inline-flex;align-items:center;gap:4px;' +
-            'line-height:normal;border:0;position:relative;' +
-            'transition:all 0.2s ease;' +
-            'user-select:none;';
-
-        if (showIcon) {
-            var icon = document.createElement('img');
-            icon.src = HIZ_URL + '/favicon-32x32.png';
-            icon.alt = '';
-            icon.style.cssText = 'width:12px;height:12px;flex-shrink:0;';
-            btn.appendChild(icon);
+        if (currentSite === 'steamdb') {
+            var dbBtn = buildSteamdbNativeButton(showIcon, newTab);
+            injectAtPlace(dbBtn, place);
+            return;
         }
 
-        var label = document.createElement('span');
-        label.textContent = 'HizSearch';
-        btn.appendChild(label);
+        var btn = buildSteamNativeButton(showIcon, newTab, place);
 
-        btn.addEventListener('mouseenter', function () {
-            btn.style.background = 'linear-gradient(-60deg, #417a9b 5%, #67c1f5 95%)';
-            btn.style.color = '#fff';
-        });
-        btn.addEventListener('mouseleave', function () {
-            btn.style.background = '#67C1F533';
-            btn.style.color = '#67c1f5';
-        });
-        btn.addEventListener('click', function () {
-            openHiz(newTab);
-        });
-
-        container.appendChild(btn);
-    }
-
-    function renderSteamdbNative(showIcon, newTab) {
-        var container = document.querySelector('.pagehead-actions.app-links');
-        if (!container) return;
-
-        clean();
-        var btn = document.createElement('a');
-        btn.id = 'hizsearch-btn';
-        btn.className = 'btn';
-        btn.href = '#';
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            openHiz(newTab);
-        });
-
-        if (showIcon) {
-            var icon = document.createElement('img');
-            icon.src = HIZ_URL + '/favicon-32x32.png';
-            icon.alt = '';
-            icon.style.cssText = 'width:16px;height:16px;vertical-align:middle;margin-right:4px;';
-            btn.appendChild(icon);
-        }
-
-        btn.appendChild(document.createTextNode('HizSearch'));
-        container.appendChild(btn);
-    }
-
-    function render(position, showIcon, newTab) {
-        clean();
-        if (position === 'native' || position === 'steam-native') {
-            if (isSteamStore) {
-                renderSteamNative(showIcon, newTab);
-            } else {
-                renderSteamdbNative(showIcon, newTab);
+        if (place.id === 'other-site-info') {
+            var container = document.querySelector(place.selector);
+            if (!container) {
+                var observer = new MutationObserver(function () {
+                    var c = document.querySelector(place.selector);
+                    if (c) {
+                        observer.disconnect();
+                        container = c;
+                        container.appendChild(btn);
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                return;
             }
-        } else {
-            renderFloating(position, showIcon, newTab);
+            container.appendChild(btn);
+            return;
         }
+
+        injectAtPlace(btn, place);
     }
 
-    chrome.storage.sync.get(['position', 'showIcon', 'newTab'], function (data) {
+    var storageKey = currentSite === 'store' ? 'place_store' : 'place_steamdb';
+    var defaultPlace = currentSite === 'store' ? 'other-site-info' : 'app-links';
+
+    chrome.storage.sync.get(['position', 'place_store', 'place_steamdb', 'showIcon', 'newTab'], function (data) {
+        if ('position' in data && !('place_store' in data) && !('place_steamdb' in data)) {
+            var migrate = data.position;
+            if (migrate === 'native' || migrate === 'steam-native') {
+                migrate = defaultPlace;
+            }
+            var obj = {};
+            obj.place_store = migrate;
+            obj.place_steamdb = migrate;
+            chrome.storage.sync.set(obj);
+            chrome.storage.sync.remove('position');
+        }
+
+        var placeId = data[storageKey] || defaultPlace;
         var newTab = 'newTab' in data ? data.newTab : !isSteamClient();
-        render(data.position || 'floating-right', data.showIcon !== false, newTab);
+        render(placeId, data.showIcon !== false, newTab);
     });
 
     chrome.storage.onChanged.addListener(function (changes, area) {
-        if (area === 'sync' && (changes.position || changes.showIcon || changes.newTab)) {
-            chrome.storage.sync.get(['position', 'showIcon', 'newTab'], function (data) {
-                var newTab = 'newTab' in data ? data.newTab : !isSteamClient();
-                render(data.position || 'floating-right', data.showIcon !== false, newTab);
-            });
+        if (area === 'sync') {
+            for (var key in changes) {
+                if (key === storageKey || key === 'showIcon' || key === 'newTab') {
+                    chrome.storage.sync.get([storageKey, 'showIcon', 'newTab'], function (data) {
+                        var placeId = data[storageKey] || defaultPlace;
+                        var newTab = 'newTab' in data ? data.newTab : !isSteamClient();
+                        render(placeId, data.showIcon !== false, newTab);
+                    });
+                    return;
+                }
+            }
         }
     });
 })();
