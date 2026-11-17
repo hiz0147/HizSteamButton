@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var siteLabel = document.getElementById('siteLabel');
     var placeOptions = document.getElementById('placeOptions');
     var newTabCheck = document.getElementById('newTab');
+    var defaultBrowserCheck = document.getElementById('openInDefaultBrowser');
+    var isSteamClient = /Valve Steam|SteamClient/i.test(navigator.userAgent);
+    document.getElementById('defaultBrowserOption').hidden = !isSteamClient;
 
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
         var tabId = tabs && tabs[0] && tabs[0].id;
@@ -32,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var storageKey = currentSite === 'store' ? 'place_store' : 'place_steamdb';
         siteLabel.textContent = currentSite === 'store' ? 'Steam Store' : 'SteamDB';
 
-        chrome.storage.sync.get(['position', 'place_store', 'place_steamdb', 'newTab'], function (data) {
+        chrome.storage.sync.get(['position', 'place_store', 'place_steamdb', 'newTab', 'openInDefaultBrowser'], function (data) {
             if ('position' in data && !('place_store' in data) && !('place_steamdb' in data)) {
                 var migrate = data.position;
                 if (migrate === 'native' || migrate === 'steam-native') {
@@ -61,11 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
-            newTabCheck.checked = data.newTab !== false;
+            newTabCheck.checked = 'newTab' in data ? data.newTab : !isSteamClient;
+            defaultBrowserCheck.checked = data.openInDefaultBrowser !== false;
+            newTabCheck.disabled = isSteamClient && defaultBrowserCheck.checked;
         });
     }
 
     newTabCheck.addEventListener('change', function () {
         chrome.storage.sync.set({ newTab: this.checked });
+    });
+
+    defaultBrowserCheck.addEventListener('change', function () {
+        newTabCheck.disabled = this.checked;
+        chrome.storage.sync.set({ openInDefaultBrowser: this.checked });
     });
 });
