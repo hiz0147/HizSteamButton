@@ -5,6 +5,7 @@
     if (!isSteamStore && !APP_ID) return;
 
     var HIZ_URL = 'https://hizsearch.pages.dev';
+    var openInDefaultBrowser = true;
     var currentSite = isSteamStore ? 'store' : 'steamdb';
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.action === 'getSite') sendResponse({ site: currentSite });
@@ -35,7 +36,9 @@
 
     function openHiz(newTab, appId) {
         var url = HIZ_URL + '/?q=' + (appId || APP_ID);
-        if (newTab) {
+        if (isSteamClient() && openInDefaultBrowser) {
+            window.location.href = 'steam://openurl_external/' + url;
+        } else if (newTab) {
             window.open(url, '_blank');
         } else {
             window.location.href = url;
@@ -394,7 +397,8 @@
 
     if (isSteamStore) initCapsuleMenu();
 
-    chrome.storage.sync.get(['position', 'place_store', 'place_steamdb', 'newTab'], function (data) {
+    chrome.storage.sync.get(['position', 'place_store', 'place_steamdb', 'newTab', 'openInDefaultBrowser'], function (data) {
+        openInDefaultBrowser = data.openInDefaultBrowser !== false;
         if ('position' in data && !('place_store' in data) && !('place_steamdb' in data)) {
             var migrate = data.position;
             if (migrate === 'native' || migrate === 'steam-native') {
@@ -421,6 +425,9 @@
 
     chrome.storage.onChanged.addListener(function (changes, area) {
         if (area !== 'sync') return;
+        if (changes.openInDefaultBrowser) {
+            openInDefaultBrowser = changes.openInDefaultBrowser.newValue !== false;
+        }
         var hit = false;
         for (var key in changes) {
             if (key === storageKey || key === 'newTab') { hit = true; break; }
